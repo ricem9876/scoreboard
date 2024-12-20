@@ -1,12 +1,35 @@
-// app/api/scoreboard/route.ts
-
 import { db } from "@/lib/db"; // Assuming db is set up properly
-import { OkPacket } from "mysql2";
 import { NextResponse } from "next/server";
-// import { OkPacket } from "mysql2";
+import { ResultSetHeader } from "mysql2"; // Correct type for the result of UPDATE query
 
+// GET endpoint: Fetch scoreboard data from the database
+export async function GET() {
+  try {
+    // Execute the query to fetch the scoreboard data (expecting rows as the first result)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const [rows]: any = await db.query("SELECT * FROM scoreboard WHERE id = 1");
+
+    // Check if rows are returned, then return the first row (or handle no data found)
+    if (!rows || rows.length === 0) {
+      return NextResponse.json(
+        { message: "Scoreboard not found" },
+        { status: 404 }
+      );
+    }
+
+    // Return the found record as JSON
+    return NextResponse.json(rows[0], { status: 200 });
+  } catch (error) {
+    console.error("Error fetching scoreboard data:", error);
+    return NextResponse.json(
+      { message: "Internal Server Error" },
+      { status: 500 }
+    );
+  }
+}
+
+// PUT endpoint: Update scoreboard data in the database
 export async function PUT(request: Request) {
-  console.log({ request });
   try {
     // Parse incoming request body
     const {
@@ -17,6 +40,8 @@ export async function PUT(request: Request) {
       timer,
       team1_name,
       team2_name,
+      period,
+      resetcount,
     } = await request.json();
 
     // Validate the input
@@ -27,13 +52,15 @@ export async function PUT(request: Request) {
       !/^#[0-9A-Fa-f]{6}$/.test(team1_color) ||
       !/^#[0-9A-Fa-f]{6}$/.test(team2_color)
     ) {
-      return new NextResponse("Invalid input data", { status: 400 });
+      return NextResponse.json(
+        { message: "Invalid input data" },
+        { status: 400 }
+      );
     }
 
     // Update the scoreboard in the database
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const [result] = await db.query<OkPacket>(
-      "UPDATE scoreboard SET team1_score = ?, team2_score = ?, team1_color = ?, team2_color = ?, timer = ?, team1_name = ?, team2_name = ? WHERE id = 1",
+    const [result] = await db.query<ResultSetHeader>(
+      "UPDATE scoreboard SET team1_score = ?, team2_score = ?, team1_color = ?, team2_color = ?, timer = ?, team1_name = ?, team2_name = ?, period = ? WHERE id = 1",
       [
         team1_score,
         team2_score,
@@ -42,22 +69,28 @@ export async function PUT(request: Request) {
         timer,
         team1_name,
         team2_name,
+        period,
+        resetcount,
       ]
     );
 
-    // Access the affectedRows property from OkPacket
-    const affectedRows = result.affectedRows;
-
-    // Handle potential errors from the query
-    if (affectedRows === 0) {
-      return new NextResponse("No rows affected. Check if the ID exists.", {
-        status: 404,
-      });
+    // Check if any rows were affected
+    if (result.affectedRows === 0) {
+      return NextResponse.json(
+        { message: "No rows affected. Check if the ID exists." },
+        { status: 404 }
+      );
     }
 
-    return new NextResponse("Scoreboard updated successfully", { status: 200 });
+    return NextResponse.json(
+      { message: "Scoreboard updated successfully" },
+      { status: 200 }
+    );
   } catch (error) {
     console.error("Error updating scoreboard:", error);
-    return new NextResponse("Internal Server Error", { status: 500 });
+    return NextResponse.json(
+      { message: "Internal Server Error" },
+      { status: 500 }
+    );
   }
 }
