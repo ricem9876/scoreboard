@@ -29,31 +29,7 @@ export async function GET() {
 
 // PUT endpoint: Update scoreboard data
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export async function PUT(request: {
-  json: () =>
-    | PromiseLike<{
-        team1_score: any;
-        team2_score: any;
-        team1_color: any;
-        team2_color: any;
-        timer: any;
-        team1_name: any;
-        team2_name: any;
-        period: any;
-        resetcount: any;
-      }>
-    | {
-        team1_score: any;
-        team2_score: any;
-        team1_color: any;
-        team2_color: any;
-        timer: any;
-        team1_name: any;
-        team2_name: any;
-        period: any;
-        resetcount: any;
-      };
-}) {
+export async function PUT(request: Request) {
   try {
     // Parse the request body
     const {
