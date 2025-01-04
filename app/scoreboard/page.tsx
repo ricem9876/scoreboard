@@ -1,7 +1,73 @@
 "use client";
-import { Box, Flex, Heading, Text } from "@chakra-ui/react";
+import { Box, Flex, Heading } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 // import { PiSoccerBall } from "react-icons/pi";
+import "./style.css";
+import { Saira_Stencil_One } from "next/font/google";
+const saira_Stencil_One = Saira_Stencil_One({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-poppins",
+  weight: "400",
+});
+
+const TeamCard = ({
+  name,
+  color,
+  score,
+}: {
+  name: string | number;
+  color: string;
+  score: string | number;
+}) => {
+  return (
+    <Box
+      flex="1"
+      textAlign="center"
+      display="flex"
+      alignItems={"center"}
+      justifyContent={"center"}
+    >
+      <Box
+        // border="4px solid white"
+        display="inline-block"
+        p={20}
+        boxShadow={`inset 0 24px 0 0 ${color}`}
+        borderRadius={20}
+        color="white"
+        background="rgba(0,0,0,0.5)"
+        backdropFilter={"blur(10px)"}
+      >
+        <Heading
+          fontSize={"7vw"}
+          lineHeight={1}
+          textTransform={"capitalize"}
+          color="white"
+          mb={10}
+        >
+          {name}
+          {/* <Box
+            display="inline-block"
+            h={10}
+            w={10}
+            backgroundColor={color}
+          ></Box> */}
+        </Heading>
+        <Box>
+          <Box
+            // background="black"
+            fontSize={"15vw"}
+            color="white"
+            // background="red"
+            lineHeight={1}
+          >
+            {score}
+          </Box>
+        </Box>
+      </Box>
+    </Box>
+  );
+};
 
 // import backgroundImage from "../assets/images/soccer.jpg";
 export default function Scoreboard() {
@@ -12,8 +78,12 @@ export default function Scoreboard() {
     team2_color: "#0000FF",
     team1_name: "test",
     team2_name: "test",
-    timer: 0,
+    timer: false,
+    period: 1,
+    resetcount: 0,
   });
+
+  const [timerValue, setTimerValue] = useState(0);
 
   useEffect(() => {
     const eventSource = new EventSource("/api/sse");
@@ -28,28 +98,70 @@ export default function Scoreboard() {
     };
   }, []);
 
-  // const formatTime = (seconds: number) => {
-  //   const mins = Math.floor(seconds / 60);
-  //   const secs = seconds % 60;
-  //   return `${mins}:${secs.toString().padStart(2, "0")}`;
-  // };
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, "0")}`;
+  };
 
+  useEffect(() => {
+    let timerInterval: NodeJS.Timeout | null = null;
+
+    if (data.timer) {
+      // Start the timer
+      timerInterval = setInterval(() => {
+        setTimerValue((prevValue) => prevValue + 1);
+      }, 1000);
+    }
+
+    return () => {
+      // Stop the timer when data.timer becomes false or component unmounts
+      if (timerInterval) clearInterval(timerInterval);
+    };
+  }, [data.timer]);
+
+  useEffect(() => {
+    console.log("reset detected");
+    setTimerValue(0);
+    // clearInterval(timerInterval);
+  }, [data.resetcount]);
+
+  useEffect(() => {
+    console.log("TEAM 1 SCORE CHANGED");
+    // run animation
+  }, [data.team1_score]);
+
+  useEffect(() => {
+    console.log("TEAM 2 SCORE CHANGED");
+    // run animation
+  }, [data.team2_score]);
   return (
     <Box
-      // background="#3e5a2c"
+      backgroundColor="black"
       p={8}
       w={"100vw"}
       h={"100vh"}
-      backgroundImage={'url("../assets/images/soccer.jpg")'}
-      backgroundPosition={"center"}
+      className={`${saira_Stencil_One.className}`}
     >
+      <Box
+        position="absolute"
+        className={`backgroundImage`}
+        top="0"
+        left="0"
+        width="100%"
+        height="100%"
+        opacity={"0.1"}
+        zIndex={0}
+      ></Box>
       <Flex
-        background="rgba(255,255,255,0.5)"
+        // background="rgba(255,255,255,0.5)"
         flexDir={"column"}
         height={"100%"}
         borderRadius={12}
+        zIndex={0}
+        pos={"relative"}
       >
-        <Box flex={0} color="black" textAlign={"center"} p={6}>
+        {/*  MOVE TO CORNER !!!!  <Box flex={0} color="black" textAlign={"center"} p={6}>
           <Box display="inline-block">
             <Text
               whiteSpace={"nowrap"}
@@ -60,7 +172,7 @@ export default function Scoreboard() {
               The Valley MP
             </Text>
           </Box>
-        </Box>
+        </Box> */}
         {/* <Flex flex={1} width={"100%"} alignItems={"center"}>
           <Flex
             flex={1}
@@ -141,65 +253,63 @@ export default function Scoreboard() {
         </Flex> */}
 
         <Flex flex="1" width="100%" flexDir={"column"}>
-          <Flex fontSize={"4vw"} flex="1">
-            <Box flex="1" textAlign="center">
-              <Heading fontSize={"4vw"} lineHeight={1}>
-                {data.team1_name}
-                <Box
-                  display="inline-block"
-                  h={10}
-                  w={10}
-                  backgroundColor={data.team1_color}
-                ></Box>
-              </Heading>
-              <Box>
-                <Box
-                  background="black"
-                  padding="2"
-                  color="white"
-                  display="inline-block"
-                  fontSize={"20vw"}
-                  borderRadius={24}
-                >
-                  {data.team1_score}
-                </Box>
-              </Box>
-            </Box>
-            <Box flex="1" textAlign="center">
-              <Heading
-                backgroundColor={data.team2_color}
-                fontSize={"4vw"}
-                lineHeight={1}
+          <Flex flex="0" alignItems={"center"} justifyContent={"center"}>
+            <Box flex="0" fontSize={"10vw"} textAlign={"center"}>
+              <Box
+                background="black"
+                color="white"
+                display={"inline-block"}
+                // border="4px solid white"
+                paddingY={3}
+                paddingX={8}
+                mr={20}
+                borderRadius={20}
               >
-                {data.team2_name}
-              </Heading>
-              <Box>
-                <Box
-                  background="black"
-                  padding="4"
-                  color="white"
-                  display="inline-block"
-                  fontSize={"15vw"}
-                  borderRadius={24}
-                >
-                  {data.team2_score}
-                </Box>
+                {formatTime(timerValue)}
               </Box>
             </Box>
-          </Flex>
-          <Flex flex="0">
-            <Box flex="1" fontSize={"5vw"}>
-              T:
-              <Box background="black" color="white" display={"inline-block"}>
-                00:00
-              </Box>
+            <Box flex="0" fontSize={"5vw"}>
+              {Array.from({ length: data.period }).map((item, index) => {
+                return (
+                  <Box
+                    key={index * 0.244}
+                    // display="inline-block"
+                    width={10}
+                    height={10}
+                    background={"yellow"}
+                    boxShadow={"0 0 10px yellow"}
+                    borderRadius={40}
+                    mb={8}
+                  />
+                );
+              })}
+              {Array.from({ length: 4 - data.period }).map((item, index) => {
+                return (
+                  <Box
+                    key={index * 0.244}
+                    // display="inline-block"
+                    width={10}
+                    height={10}
+                    background={"white"}
+                    boxShadow={"0 0 10px white"}
+                    borderRadius={40}
+                    mb={8}
+                  />
+                );
+              })}
             </Box>
-            <Box flex="1" fontSize={"5vw"}>
-              Period:
-              <Box background="black" color="white" display={"inline-block"}>
-                4
-              </Box>
-            </Box>
+          </Flex>{" "}
+          <Flex fontSize={"4vw"} flex="1">
+            <TeamCard
+              name={data.team1_name}
+              color={data.team1_color}
+              score={data.team1_score}
+            />
+            <TeamCard
+              name={data.team2_name}
+              color={data.team2_color}
+              score={data.team2_score}
+            />
           </Flex>
         </Flex>
       </Flex>
