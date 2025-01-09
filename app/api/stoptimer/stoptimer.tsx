@@ -9,7 +9,7 @@ export async function PUT(request: Request) {
 
     // Update the resetcount in the database
     const [result] = await db.query(
-      `UPDATE scoreboard SET timer = ${parseInt(timerActive)} WHERE id = 1`
+      `UPDATE scoreboard SET timer = ${timerActive ? 1 : 0} WHERE id = 1`
     );
 
     // Check if any rows were affected

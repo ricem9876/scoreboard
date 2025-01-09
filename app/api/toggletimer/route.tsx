@@ -1,25 +1,17 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { db } from "@/lib/db"; // Assuming db is set up properly
 import { NextResponse } from "next/server";
 
-export async function PUT(request: Request) {
+export async function PUT(request: any) {
   try {
     // Parse incoming request body
-    const { previouscount } = await request.json();
-    console.log(previouscount);
+    const { timerActive } = await request.json();
+    console.log("Timer Active:", timerActive);
 
-    // Validate the input
-    const parsedCount = parseInt(previouscount);
-    if (isNaN(parsedCount)) {
-      return NextResponse.json(
-        { message: "Invalid input data" },
-        { status: 400 }
-      );
-    }
-
-    // Update the resetcount in the database
+    // Use parameterized query to prevent SQL injection
     const [result] = await db.query(
-      "UPDATE scoreboard SET resetcount = ? WHERE id = 1",
-      [parsedCount + 1]
+      `UPDATE scoreboard SET timer = ? WHERE id = ?`,
+      [timerActive ? 1 : 0, 1]
     );
 
     // Check if any rows were affected
@@ -31,12 +23,11 @@ export async function PUT(request: Request) {
     }
 
     return NextResponse.json(
-      { message: "Reset count updated successfully" },
+      { message: "Toggled clock successfully" },
       { status: 200 }
     );
   } catch (error) {
-    console.error("Error updating reset count:", error);
-
+    console.error("Error toggling clock:", error);
     return NextResponse.json(
       { message: "Internal Server Error" },
       { status: 500 }

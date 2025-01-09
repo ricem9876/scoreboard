@@ -6,7 +6,6 @@ import { NextResponse } from "next/server";
 export async function GET() {
   try {
     // Fetch scoreboard data where `id` is 1
-    db.shutdownHandler();
     const [rows] = await db.query("SELECT * FROM scoreboard WHERE id = 1");
 
     // Handle the case where no data is found
@@ -28,7 +27,6 @@ export async function GET() {
 }
 
 // PUT endpoint: Update scoreboard data
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function PUT(request: Request) {
   try {
     // Parse the request body
