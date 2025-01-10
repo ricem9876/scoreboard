@@ -1,7 +1,7 @@
-import { Provider } from "@/components/ui/provider";
+import { Provider } from "../components/ui/provider";
 import { Theme } from "@chakra-ui/react";
 import type { Metadata } from "next";
-import { db } from "@/lib/db";
+import { db } from "../lib/db";
 
 export const metadata: Metadata = {
   title: "The Valley Scoreboard",

@@ -1,4 +1,4 @@
-import { db } from "@/lib/db"; // Assuming db is set up properly
+import { db } from "../../../lib/db"; // Connection pool setup
 import { NextResponse } from "next/server";
 
 export async function PUT(request: Request) {

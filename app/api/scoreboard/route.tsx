@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { db } from "@/lib/db"; // Connection pool setup
+import { db } from "../../../lib/db"; // Connection pool setup
 import { NextResponse } from "next/server";
 
 // GET endpoint: Fetch scoreboard data

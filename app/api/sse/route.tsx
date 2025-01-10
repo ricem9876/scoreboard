@@ -1,4 +1,4 @@
-import { db } from "@/lib/db";
+import { db } from "../../../lib/db"; // Connection pool setup
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function GET(request: any) {
