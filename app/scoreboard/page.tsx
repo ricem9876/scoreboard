@@ -86,7 +86,7 @@ export default function Scoreboard() {
   });
   const [scoreAnimation, setScoreAnimation] = useState(false);
   const [scoreColor, setScoreColor] = useState<string>("");
-  const { time, start, pause, reset, isRunning } = useTimeClock();
+  const { time, start, pause, isRunning, reset } = useTimeClock();
   useWakeLock();
 
   const scoreEventHandler = function (color: string) {
@@ -113,7 +113,7 @@ export default function Scoreboard() {
   useEffect(() => {
     console.log("reset detected");
     reset();
-  }, [data.resetcount, reset]);
+  }, [data.resetcount]);
 
   useEffect(() => {
     console.log("TEAM 1 SCORE CHANGED");
@@ -171,7 +171,8 @@ export default function Scoreboard() {
                 mr={20}
                 borderRadius={20}
                 pos={"relative"}
-                boxShadow={`${isRunning ? "0 0 20px green" : " 0 0 5px orange"}`}
+                boxShadow={`${isRunning ? "0 0 20px green" : " 0 0 0px black"}`}
+                transition="0.5s ease all"
               >
                 {/* <Box
                   w={10}
