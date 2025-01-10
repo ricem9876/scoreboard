@@ -84,7 +84,6 @@ export default function Scoreboard() {
     period: 1,
     resetcount: 0,
   });
-  const [timerValue, setTimerValue] = useState(0); // obsolete
   const [scoreAnimation, setScoreAnimation] = useState(false);
   const [scoreColor, setScoreColor] = useState<string>("");
   const { time, start, pause, reset, isRunning } = useTimeClock();
@@ -111,32 +110,9 @@ export default function Scoreboard() {
     };
   }, []);
 
-  const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, "0")}`;
-  };
-
-  // TODO: REMOVE
-  // Old way
-  useEffect(() => {
-    let timerInterval: NodeJS.Timeout | null = null;
-    if (data.timer) {
-      // Start the timer
-      timerInterval = setInterval(() => {
-        setTimerValue((prevValue) => prevValue + 1);
-      }, 1000);
-    }
-    return () => {
-      if (timerInterval) clearInterval(timerInterval);
-    };
-  }, [data.timer]);
-
   useEffect(() => {
     console.log("reset detected");
     reset();
-    // TODO: REMOVE - OLD
-    setTimerValue(0);
   }, [data.resetcount]);
 
   useEffect(() => {
@@ -194,12 +170,40 @@ export default function Scoreboard() {
                 paddingX={8}
                 mr={20}
                 borderRadius={20}
+                pos={"relative"}
               >
-                {time}({isRunning ? "ye" : "ne"})-{formatTime(timerValue)}
+                <Box
+                  w={10}
+                  h={10}
+                  background={isRunning ? "green" : "orange"}
+                  position="absolute"
+                  left={2}
+                  top={2}
+                  borderRadius={20}
+                ></Box>
+                {time}
               </Box>
             </Box>
             <Box flex="0" fontSize={"5vw"}>
-              {Array.from({ length: data.period }).map((item, index) => {
+              {Array.from({ length: 4 }).map((item, index) => {
+                return (
+                  <Box
+                    key={index * 0.244}
+                    // display="inline-block"
+                    width={10}
+                    height={10}
+                    background={index < data.period ? "yellow" : "white"}
+                    boxShadow={
+                      index < data.period
+                        ? "0 0 10px yellow"
+                        : "0 0 10px transparent"
+                    }
+                    borderRadius={40}
+                    mb={8}
+                  />
+                );
+              })}{" "}
+              {/* {Array.from({ length: data.period }).map((item, index) => {
                 return (
                   <Box
                     key={index * 0.244}
@@ -225,7 +229,7 @@ export default function Scoreboard() {
                     mb={8}
                   />
                 );
-              })}
+              })} */}
             </Box>
           </Flex>{" "}
           <Flex fontSize={"4vw"} flex="1">
@@ -250,7 +254,8 @@ export default function Scoreboard() {
           left: "50%",
           transform:
             "translate(-50%,-50%) " +
-            `${scoreAnimation ? "scale(1)" : "scale(0)"}`,
+            `${scoreAnimation ? "scale(1)" : "scale(0)"} ` +
+            `${scoreAnimation ? "rotate(0deg)" : "rotate(45deg)"}`,
           fontSize: "20vw",
           transition: "0.3s ease all",
           opacity: scoreAnimation ? "1" : "0",

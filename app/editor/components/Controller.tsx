@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Box, Flex, Button, Stack } from "@chakra-ui/react";
+import { useEffect, useState } from "react";
 
 export default function Controller({
   data,
@@ -16,6 +17,7 @@ export default function Controller({
   decrementScore: (team: string) => void;
   setPeriodHandler: (period: number) => void;
 }) {
+  const [localTimer, setLocalTimer] = useState(data.timer);
   const startStopHandler = () => {
     console.log("startStopHander fired");
     handleTimerToggle();
@@ -37,20 +39,39 @@ export default function Controller({
     setPeriodHandler(period);
   };
 
+  useEffect(() => {
+    setLocalTimer(data.timer);
+    return () => {};
+  }, [data.timer]);
+
   return (
     <>
       <Stack gap={2} mt={2}>
         <Flex gap={2}>
           <Box flex={1}>
-            <Button
-              w="100%"
-              paddingY={8}
-              onClick={() => {
-                startStopHandler();
-              }}
-            >
-              {data.timer === 0 ? "Start Clock" : "Stop Clock"}
-            </Button>
+            {localTimer === 0 ? (
+              <Button
+                w="100%"
+                paddingY={8}
+                onClick={() => {
+                  startStopHandler();
+                  setTimeout(() => {}, 50); // Ensure state propagation
+                }}
+              >
+                {"Start Clock"}
+              </Button>
+            ) : (
+              <Button
+                w="100%"
+                paddingY={8}
+                onClick={() => {
+                  startStopHandler();
+                  setTimeout(() => {}, 50); // Ensure state propagation
+                }}
+              >
+                {"Stop Clock"}
+              </Button>
+            )}
           </Box>
           <Box flex={0}>
             <Button
