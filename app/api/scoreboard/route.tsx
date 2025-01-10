@@ -83,11 +83,14 @@ export async function PUT(request: Request) {
       { message: "Scoreboard updated successfully" },
       { status: 200 }
     );
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error updating scoreboard:", error);
 
     return NextResponse.json(
-      { message: "Internal Server Error" },
+      {
+        message: "Internal Server Error",
+        error: error.message || "An unexpected error occurred",
+      },
       { status: 500 }
     );
   }
