@@ -113,17 +113,17 @@ export default function Scoreboard() {
   useEffect(() => {
     console.log("reset detected");
     reset();
-  }, [data.resetcount]);
+  }, [data.resetcount, reset]);
 
   useEffect(() => {
     console.log("TEAM 1 SCORE CHANGED");
     scoreEventHandler(data.team1_color);
-  }, [data.team1_score]);
+  }, [data.team1_color, data.team1_score]);
 
   useEffect(() => {
     console.log("TEAM 2 SCORE CHANGED");
     scoreEventHandler(data.team2_color);
-  }, [data.team2_score]);
+  }, [data.team2_color, data.team2_score]);
 
   useEffect(() => {
     if (data.timer) {
@@ -171,8 +171,9 @@ export default function Scoreboard() {
                 mr={20}
                 borderRadius={20}
                 pos={"relative"}
+                boxShadow={`${isRunning ? "0 0 20px green" : " 0 0 5px orange"}`}
               >
-                <Box
+                {/* <Box
                   w={10}
                   h={10}
                   background={isRunning ? "green" : "orange"}
@@ -180,7 +181,7 @@ export default function Scoreboard() {
                   left={2}
                   top={2}
                   borderRadius={20}
-                ></Box>
+                ></Box> */}
                 {time}
               </Box>
             </Box>
@@ -193,6 +194,7 @@ export default function Scoreboard() {
                     width={10}
                     height={10}
                     background={index < data.period ? "yellow" : "white"}
+                    transition={"0.5s ease all"}
                     boxShadow={
                       index < data.period
                         ? "0 0 10px yellow"
