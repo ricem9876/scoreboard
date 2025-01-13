@@ -1,15 +1,17 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { db } from "../../../lib/db"; // Connection pool setup
 import { NextResponse } from "next/server";
 
-export async function PUT(request: Request) {
+export async function PUT(request: any) {
   try {
     // Parse incoming request body
     const { timerActive } = await request.json();
-    console.log(timerActive);
+    console.log("Timer Active:", timerActive);
 
-    // Update the resetcount in the database
+    // Use parameterized query to prevent SQL injection
     const [result] = await db.query(
-      `UPDATE scoreboard SET timer = ${timerActive ? 1 : 0} WHERE id = 1`
+      `UPDATE scoreboard SET timer = ? WHERE id = ?`,
+      [timerActive ? 1 : 0, 1]
     );
 
     // Check if any rows were affected
@@ -19,14 +21,13 @@ export async function PUT(request: Request) {
         { status: 404 }
       );
     }
-    db.shutdownHandler();
+
     return NextResponse.json(
-      { message: "Reset count updated successfully" },
+      { message: "Toggled clock successfully" },
       { status: 200 }
     );
   } catch (error) {
-    console.error("Error updating reset count:", error);
-    db.shutdownHandler();
+    console.error("Error toggling clock:", error);
     return NextResponse.json(
       { message: "Internal Server Error" },
       { status: 500 }

@@ -1,12 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { db } from "@/lib/db"; // Connection pool setup
+import { db } from "../../../lib/db"; // Connection pool setup
 import { NextResponse } from "next/server";
 
 // GET endpoint: Fetch scoreboard data
 export async function GET() {
   try {
     // Fetch scoreboard data where `id` is 1
-    db.shutdownHandler();
     const [rows] = await db.query("SELECT * FROM scoreboard WHERE id = 1");
 
     // Handle the case where no data is found
@@ -28,7 +27,6 @@ export async function GET() {
 }
 
 // PUT endpoint: Update scoreboard data
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function PUT(request: Request) {
   try {
     // Parse the request body
@@ -85,11 +83,14 @@ export async function PUT(request: Request) {
       { message: "Scoreboard updated successfully" },
       { status: 200 }
     );
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error updating scoreboard:", error);
 
     return NextResponse.json(
-      { message: "Internal Server Error" },
+      {
+        message: "Internal Server Error",
+        error: error.message || "An unexpected error occurred",
+      },
       { status: 500 }
     );
   }
