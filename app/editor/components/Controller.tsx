@@ -4,23 +4,46 @@ import { useEffect, useState } from "react";
 
 export default function Controller({
   data,
-  handleTimerToggle,
   handleReset,
   incrementScore,
   decrementScore,
   setPeriodHandler,
+  toggleTimerHandler,
 }: {
   data: any;
-  handleTimerToggle: () => void;
   handleReset: () => Promise<void>;
   incrementScore: (team: string) => void;
   decrementScore: (team: string) => void;
   setPeriodHandler: (period: number) => void;
+  toggleTimerHandler: (status: boolean) => void;
 }) {
   const [localTimer, setLocalTimer] = useState(data.timer);
-  const startStopHandler = () => {
-    console.log("startStopHander fired");
-    handleTimerToggle();
+
+  // const startStopHandler = () => {
+  //   console.log("startStopHander fired");
+  //   setIsRunning((prev) => !prev);
+  //   if (isRunning) {
+  //     // Stop the timer
+  //     setLocalTimer(0);
+  //     handleTimerToggle();
+  //   } else {
+  //     // Start the timer
+  //     setLocalTimer(1); // or any other logic to start the timer
+  //     handleTimerToggle();
+  //   }
+  // };
+
+  const stopClockHandler = () => {
+    console.log("stopClockHandler fired");
+    setLocalTimer(0);
+    // handleTimerToggle();
+    toggleTimerHandler(false);
+  };
+  const startClockHandler = () => {
+    console.log("startClockHandler fired");
+    setLocalTimer(1);
+    // handleTimerToggle();
+    toggleTimerHandler(true);
   };
   const resetHandler = () => {
     console.log("resetHandler fired");
@@ -50,25 +73,11 @@ export default function Controller({
         <Flex gap={2}>
           <Box flex={1}>
             {localTimer === 0 ? (
-              <Button
-                w="100%"
-                paddingY={8}
-                onClick={() => {
-                  startStopHandler();
-                  setTimeout(() => {}, 50); // Ensure state propagation
-                }}
-              >
+              <Button w="100%" paddingY={8} onClick={startClockHandler}>
                 {"Start Clock"}
               </Button>
             ) : (
-              <Button
-                w="100%"
-                paddingY={8}
-                onClick={() => {
-                  startStopHandler();
-                  setTimeout(() => {}, 50); // Ensure state propagation
-                }}
-              >
+              <Button w="100%" paddingY={8} onClick={stopClockHandler}>
                 {"Stop Clock"}
               </Button>
             )}

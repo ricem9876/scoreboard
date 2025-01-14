@@ -19,14 +19,12 @@ export async function PUT(request: Request) {
         { status: 404 }
       );
     }
-    db.shutdownHandler();
     return NextResponse.json(
       { message: "Reset count updated successfully" },
       { status: 200 }
     );
   } catch (error) {
     console.error("Error updating reset count:", error);
-    db.shutdownHandler();
     return NextResponse.json(
       { message: "Internal Server Error" },
       { status: 500 }
