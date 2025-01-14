@@ -67,27 +67,46 @@ export default function Edit() {
   //   });
   // };
 
-  const handleTimerToggle = () => {
-    // const timerStatus = timerActive;
-    // setTimerActive(!timerStatus);
-    console.log("attempting to trigger timer");
+  // const handleTimerToggle = () => {
+  //   // const timerStatus = timerActive;
+  //   // setTimerActive(!timerStatus);
+  //   console.log("attempting to trigger timer");
 
-    const newTimerStatus = data.timer === 1 ? false : true;
+  //   const newTimerStatus = data.timer === 1 ? false : true;
 
-    //change timeractive
-    setTimerActive(newTimerStatus);
+  //   //change timeractive
+  //   setTimerActive(newTimerStatus);
 
-    //change data
+  //   //change data
 
-    setData((prev: DataTypes) => {
-      return { ...prev, timer: newTimerStatus ? 1 : 0 };
-    });
+  //   setData((prev: DataTypes) => {
+  //     return { ...prev, timer: newTimerStatus ? 1 : 0 };
+  //   });
 
-    // await fetch("/api/toggletimer", {
-    //   method: "PUT",
-    //   headers: { "Content-Type": "application/json" },
-    //   body: JSON.stringify({ timerActive: true }),
-    // });
+  //   // await fetch("/api/toggletimer", {
+  //   //   method: "PUT",
+  //   //   headers: { "Content-Type": "application/json" },
+  //   //   body: JSON.stringify({ timerActive: true }),
+  //   // });
+  // };
+
+  const toggleTimerHandler = (status: boolean) => {
+    const toSet = status;
+    if (toSet) {
+      //change timeractive
+      setTimerActive(true);
+      //change data
+      setData((prev: DataTypes) => {
+        return { ...prev, timer: 1 };
+      });
+    } else {
+      //change timeractive
+      setTimerActive(false);
+      //change data
+      setData((prev: DataTypes) => {
+        return { ...prev, timer: 0 };
+      });
+    }
   };
 
   const handleUpdate = useCallback(async () => {
@@ -322,11 +341,11 @@ export default function Edit() {
       {activePanel === "controller" && (
         <Controller
           data={data}
-          handleTimerToggle={handleTimerToggle}
           handleReset={handleReset}
           incrementScore={incrementScore}
           decrementScore={decrementScore}
           setPeriodHandler={setPeriodHandler}
+          toggleTimerHandler={toggleTimerHandler}
         />
       )}
     </Box>
