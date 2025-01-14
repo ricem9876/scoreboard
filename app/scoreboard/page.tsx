@@ -266,6 +266,7 @@ export default function Scoreboard() {
           borderRadius: 20,
           lineHeight: 1,
           padding: "16px",
+          color: "white",
         }}
       >
         SCORE!
