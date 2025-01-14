@@ -14,7 +14,6 @@ export async function GET(request: any) {
       }, 1000);
 
       request.signal.addEventListener("abort", () => {
-        db.shutdownHandler();
         clearInterval(intervalId);
         controller.close();
       });
