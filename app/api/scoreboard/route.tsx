@@ -1,28 +1,35 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { db } from "../../../lib/db"; // Connection pool setup
+import { PrismaClient } from "@prisma/client";
 import { NextResponse } from "next/server";
+
+const prisma = new PrismaClient();
 
 // GET endpoint: Fetch scoreboard data
 export async function GET() {
   try {
     // Fetch scoreboard data where `id` is 1
-    const [rows] = await db.query("SELECT * FROM scoreboard WHERE id = 1");
+    const scoreboard = await prisma.scoreboard.findUnique({
+      where: { id: 1 },
+    });
 
     // Handle the case where no data is found
-    if (!rows || rows.length === 0) {
+    if (!scoreboard) {
       return NextResponse.json(
         { message: "Scoreboard not found" },
         { status: 404 }
       );
     }
-    // Return the first row as JSON
-    return NextResponse.json(rows[0], { status: 200 });
+
+    // Return the scoreboard data as JSON
+    return NextResponse.json(scoreboard, { status: 200 });
   } catch (error) {
     console.error("Error fetching scoreboard data:", error);
     return NextResponse.json(
       { message: "Internal Server Error" },
       { status: 500 }
     );
+  } finally {
+    // Ensure Prisma client is disconnected
+    await prisma.$disconnect();
   }
 }
 
@@ -57,9 +64,9 @@ export async function PUT(request: Request) {
     }
 
     // Update the scoreboard
-    const [result] = await db.query(
-      "UPDATE scoreboard SET team1_score = ?, team2_score = ?, team1_color = ?, team2_color = ?, timer = ?, team1_name = ?, team2_name = ?, period = ?, resetcount = ? WHERE id = 1",
-      [
+    const scoreboard = await prisma.scoreboard.update({
+      where: { id: 1 },
+      data: {
         team1_score,
         team2_score,
         team1_color,
@@ -69,23 +76,17 @@ export async function PUT(request: Request) {
         team2_name,
         period,
         resetcount,
-      ]
-    );
+      },
+    });
+    console.log("scoreboard", scoreboard);
 
-    // Handle the case where no rows were affected
-    if (result.affectedRows === 0) {
-      return NextResponse.json(
-        { message: "No rows affected. Check if the ID exists." },
-        { status: 404 }
-      );
-    }
     return NextResponse.json(
       { message: "Scoreboard updated successfully" },
       { status: 200 }
     );
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
-    console.error("Error updating scoreboard:", error);
-
+    console.log("Error updating scoreboard:", error);
     return NextResponse.json(
       {
         message: "Internal Server Error",
@@ -93,5 +94,8 @@ export async function PUT(request: Request) {
       },
       { status: 500 }
     );
+  } finally {
+    // Ensure Prisma client is disconnected
+    await prisma.$disconnect();
   }
 }

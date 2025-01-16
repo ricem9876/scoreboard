@@ -1,5 +1,7 @@
-import { db } from "../../../lib/db"; // Connection pool setup
+import { PrismaClient } from "@prisma/client";
 import { NextResponse } from "next/server";
+
+const prisma = new PrismaClient();
 
 export async function PUT(request: Request) {
   try {
@@ -7,27 +9,36 @@ export async function PUT(request: Request) {
     const { timerActive } = await request.json();
     console.log(timerActive);
 
-    // Update the resetcount in the database
-    const [result] = await db.query(
-      `UPDATE scoreboard SET timer = ${timerActive ? 1 : 0} WHERE id = 1`
-    );
+    // Update the timer in the database
+    const result = await prisma.scoreboard.update({
+      where: { id: 1 },
+      data: { timer: timerActive ? 1 : 0 },
+    });
 
-    // Check if any rows were affected
-    if (result.affectedRows === 0) {
+    // Check if the update was successful
+    if (!result) {
       return NextResponse.json(
-        { message: "No rows affected. Check if the ID exists." },
-        { status: 404 }
+        { message: "Failed to update timer" },
+        { status: 500 }
       );
     }
+
     return NextResponse.json(
-      { message: "Reset count updated successfully" },
+      { message: "Timer updated successfully" },
       { status: 200 }
     );
-  } catch (error) {
-    console.error("Error updating reset count:", error);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    console.error("Error updating timer:", error);
     return NextResponse.json(
-      { message: "Internal Server Error" },
+      {
+        message: "Internal Server Error",
+        error: error.message || "An unexpected error occurred",
+      },
       { status: 500 }
     );
+  } finally {
+    // Ensure Prisma client is disconnected
+    await prisma.$disconnect();
   }
 }
