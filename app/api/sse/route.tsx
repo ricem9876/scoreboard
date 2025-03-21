@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { PrismaClient } from "@prisma/client";
 import { NextResponse } from "next/server";
 
@@ -11,9 +12,7 @@ export async function GET(request: any) {
         try {
           // Fetch scoreboard data
           const scoreboard = await prisma.scoreboard.findUnique({
-            where: {
-              id: 1,
-            },
+            where: { id: process.env.NODE_ENV === "development" ? 2 : 1 },
             select: {
               id: true,
               team1_name: true,
@@ -41,10 +40,10 @@ export async function GET(request: any) {
             controller.enqueue(`data: ${JSON.stringify(scoreboard)}\n\n`);
           }
         } catch (error) {
-          console.error("Error fetching scoreboard data:", error);
-          controller.enqueue(
-            `data: ${JSON.stringify({ message: "Internal Server Error" })}\n\n`
-          );
+          // console.error("Error fetching scoreboard data:", error);
+          // controller.enqueue(
+          //   `data: ${JSON.stringify({ message: "Internal Server Error" })}\n\n`
+          // );
         }
       }, 1000);
 

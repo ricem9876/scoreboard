@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { PrismaClient } from "@prisma/client";
 import { NextResponse } from "next/server";
 
@@ -8,7 +9,7 @@ export async function GET() {
   try {
     // Fetch scoreboard data where `id` is 1
     const scoreboard = await prisma.scoreboard.findUnique({
-      where: { id: 1 },
+      where: { id: process.env.NODE_ENV === "development" ? 2 : 1 },
     });
 
     console.log({ sbres: scoreboard });
@@ -68,7 +69,7 @@ export async function PUT(request: Request) {
 
     // Update the scoreboard
     const updatedScoreboard = await prisma.scoreboard.update({
-      where: { id: 1 },
+      where: { id: process.env.NODE_ENV === "development" ? 2 : 1 },
       data: {
         team1_score,
         team2_score,
@@ -83,12 +84,15 @@ export async function PUT(request: Request) {
         team2_fouls,
       },
     });
-    console.log({ updatedScoreboard });
+
+    if (updatedScoreboard) {
+      console.log({ updatedScoreboard });
+    }
 
     return NextResponse.json({}, { status: 200 });
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (error: any) {
-    console.log("Error updating scoreboard:", error);
+  } catch (error) {
+    // console.log("Error updating scoreboard:", error);
     return NextResponse.json(
       { error: "Internal Server Error" },
       { status: 500 }

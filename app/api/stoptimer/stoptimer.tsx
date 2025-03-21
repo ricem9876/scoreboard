@@ -11,7 +11,7 @@ export async function PUT(request: Request) {
 
     // Update the timer in the database
     const result = await prisma.scoreboard.update({
-      where: { id: 1 },
+      where: { id: process.env.NODE_ENV === "development" ? 2 : 1 },
       data: { timer: timerActive ? 1 : 0 },
     });
 
