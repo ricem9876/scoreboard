@@ -22,6 +22,8 @@ type DataTypes = {
   timer?: number;
   period?: number;
   resetcount?: number;
+  team1_fouls?: number;
+  team2_fouls?: number;
 };
 
 export default function Edit() {
@@ -35,6 +37,8 @@ export default function Edit() {
     timer: 0,
     period: 0,
     resetcount: 0,
+    team1_fouls: 0,
+    team2_fouls: 0,
   });
   const [activePanel, setActivePanel] = useState<"controller" | "editor">(
     "editor"
@@ -44,7 +48,10 @@ export default function Edit() {
   useEffect(() => {
     fetch("/api/scoreboard", { method: "GET" })
       .then((res) => res.json())
-      .then((data) => setData(data));
+      .then((data) => {
+        console.log({ data });
+        setData(data.data);
+      });
   }, []);
 
   // useEffect(() => {
@@ -109,13 +116,13 @@ export default function Edit() {
     }
   };
 
-  const handleUpdate = useCallback(async () => {
+  const handleUpdate = useCallback(async (updateData: object) => {
     await fetch("/api/scoreboard", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
+      body: JSON.stringify(updateData),
     });
-  }, [data]);
+  }, []);
 
   const incrementScore = (team: string) => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -206,12 +213,8 @@ export default function Edit() {
   });
 
   useEffect(() => {
-    handleUpdate();
+    handleUpdate(data);
   }, [data, handleUpdate]);
-
-  useEffect(() => {
-    handleUpdate();
-  }, [data]);
 
   return (
     <Box p={2}>
@@ -364,7 +367,9 @@ export default function Edit() {
           <Button
             colorScheme="blue"
             mt={6}
-            onClick={handleUpdate}
+            onClick={() => {
+              handleUpdate(data);
+            }}
             size="md"
             width="full"
           >

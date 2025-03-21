@@ -147,6 +147,7 @@ export default function Scoreboard() {
       w={"100vw"}
       h={"100vh"}
       className={`${saira_Stencil_One.className}`}
+      boxShadow={`${isRunning ? "inset 0 0 0 20px rgba(0,255,0,0.5)" : " inset 0 0 0 10px rgba(250,156,28,0.8)"}`}
     >
       <Box
         position="absolute"
@@ -177,7 +178,7 @@ export default function Scoreboard() {
                 mr={20}
                 borderRadius={20}
                 pos={"relative"}
-                boxShadow={`${isRunning ? "0 0 20px green" : " 0 0 0px black"}`}
+                // boxShadow={`${isRunning ? "0 0 20px green" : " 0 0 0px black"}`}
                 transition="0.5s ease all"
               >
                 {/* <Box

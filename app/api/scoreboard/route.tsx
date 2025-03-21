@@ -11,6 +11,8 @@ export async function GET() {
       where: { id: 1 },
     });
 
+    console.log({ sbres: scoreboard });
+
     // Handle the case where no data is found
     if (!scoreboard) {
       return NextResponse.json(
@@ -20,7 +22,7 @@ export async function GET() {
     }
 
     // Return the scoreboard data as JSON
-    return NextResponse.json(scoreboard, { status: 200 });
+    return NextResponse.json({ data: scoreboard }, { status: 200 });
   } catch (error) {
     console.error("Error fetching scoreboard data:", error);
     return NextResponse.json({ message: "Internal Server Error", status: 500 });
@@ -34,6 +36,8 @@ export async function GET() {
 export async function PUT(request: Request) {
   try {
     // Parse the request body
+
+    console.log({ request });
     const {
       team1_score,
       team2_score,
@@ -81,12 +85,7 @@ export async function PUT(request: Request) {
     });
     console.log({ updatedScoreboard });
 
-    return NextResponse.json(
-      {
-        error: "Scoreboard updated successfully",
-      },
-      { status: 200 }
-    );
+    return NextResponse.json({}, { status: 200 });
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     console.log("Error updating scoreboard:", error);
