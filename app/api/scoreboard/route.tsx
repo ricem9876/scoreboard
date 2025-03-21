@@ -23,10 +23,7 @@ export async function GET() {
     return NextResponse.json(scoreboard, { status: 200 });
   } catch (error) {
     console.error("Error fetching scoreboard data:", error);
-    return NextResponse.json(
-      { message: "Internal Server Error" },
-      { status: 500 }
-    );
+    return NextResponse.json({ message: "Internal Server Error", status: 500 });
   } finally {
     // Ensure Prisma client is disconnected
     await prisma.$disconnect();
@@ -47,6 +44,8 @@ export async function PUT(request: Request) {
       team2_name,
       period,
       resetcount,
+      team1_fouls,
+      team2_fouls,
     } = await request.json();
 
     // Validate the input
@@ -58,13 +57,13 @@ export async function PUT(request: Request) {
       !/^#[0-9A-Fa-f]{6}$/.test(team2_color)
     ) {
       return NextResponse.json(
-        { message: "Invalid input data" },
+        { error: "Invalid input data" },
         { status: 400 }
       );
     }
 
     // Update the scoreboard
-    const scoreboard = await prisma.scoreboard.update({
+    const updatedScoreboard = await prisma.scoreboard.update({
       where: { id: 1 },
       data: {
         team1_score,
@@ -76,22 +75,23 @@ export async function PUT(request: Request) {
         team2_name,
         period,
         resetcount,
+        team1_fouls,
+        team2_fouls,
       },
     });
-    console.log("scoreboard", scoreboard);
+    console.log({ updatedScoreboard });
 
     return NextResponse.json(
-      { message: "Scoreboard updated successfully" },
+      {
+        error: "Scoreboard updated successfully",
+      },
       { status: 200 }
     );
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     console.log("Error updating scoreboard:", error);
     return NextResponse.json(
-      {
-        message: "Internal Server Error",
-        error: error.message || "An unexpected error occurred",
-      },
+      { error: "Internal Server Error" },
       { status: 500 }
     );
   } finally {

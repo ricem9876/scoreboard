@@ -143,6 +143,36 @@ export default function Edit() {
       }
     });
   };
+  const incrementFoul = (team: string) => {
+    console.log({ fouls: team });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    setData((prev: any): any => {
+      if (team === "team1") {
+        const newScore = prev.team1_fouls + 1;
+        console.log(newScore);
+        return { ...data, team1_fouls: newScore };
+      }
+      if (team === "team2") {
+        const newScore = prev.team2_fouls + 1;
+        return { ...data, team2_fouls: newScore };
+      }
+    });
+  };
+  const decrementFoul = (team: string) => {
+    console.log({ fouls: team });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    setData((prev: any): any => {
+      if (team === "team1") {
+        const newScore = prev.team1_fouls + 1;
+        console.log(newScore);
+        return { ...data, team1_fouls: newScore };
+      }
+      if (team === "team2") {
+        const newScore = prev.team2_fouls + 1;
+        return { ...data, team2_fouls: newScore };
+      }
+    });
+  };
 
   const handleReset = async () => {
     await fetch("/api/timerreset", {
@@ -178,6 +208,10 @@ export default function Edit() {
   useEffect(() => {
     handleUpdate();
   }, [data, handleUpdate]);
+
+  useEffect(() => {
+    handleUpdate();
+  }, [data]);
 
   return (
     <Box p={2}>
@@ -346,6 +380,8 @@ export default function Edit() {
           decrementScore={decrementScore}
           setPeriodHandler={setPeriodHandler}
           toggleTimerHandler={toggleTimerHandler}
+          incrementFoul={incrementFoul}
+          decrementFoul={decrementFoul}
         />
       )}
     </Box>

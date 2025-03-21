@@ -8,14 +8,16 @@ datasource db {
 }
 
 model scoreboard {
-  id          Int     @id @default(1)
-  team1_score Int?    @default(0)
-  team1_name  String? @default("lions") @db.VarChar(250)
-  team1_color String? @default("#0000ff") @db.VarChar(250)
-  team2_score Int?    @default(0)
-  team2_name  String? @default("tigers") @db.VarChar(250)
-  team2_color String? @default("#ff0000") @db.VarChar(250)
-  timer       Int?    @default(0)
-  period      Int?    @default(1)
-  resetcount  Int?    @default(0)
+  id          Int     @unique(map: "unique")
+  team1_name  String @db.Char(20)
+  team1_score Int
+  team2_name  String @db.Char(20)
+  team2_score Int
+  timer       Int
+  period      Int
+  resetcount  Int
+  team1_color String @db.Char(20)
+  team2_color String @db.Char(20)
+  team1_fouls Int
+  team2_fouls Int
 }

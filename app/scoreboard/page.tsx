@@ -16,10 +16,12 @@ const TeamCard = ({
   name,
   color,
   score,
+  fouls,
 }: {
   name: string | number;
   color: string;
   score: string | number;
+  fouls: number;
 }) => {
   return (
     <Box
@@ -33,7 +35,8 @@ const TeamCard = ({
       <Box
         // border="4px solid white"
         display="inline-block"
-        p={20}
+        paddingX={20}
+        paddingY={10}
         boxShadow={`inset 0 24px 0 0 ${color}`}
         borderRadius={20}
         color="white"
@@ -65,6 +68,7 @@ const TeamCard = ({
           >
             {score}
           </Box>
+          <Box opacity={0.5}>{fouls}</Box>
         </Box>
       </Box>
     </Box>
@@ -83,6 +87,8 @@ export default function Scoreboard() {
     timer: false,
     period: 1,
     resetcount: 0,
+    team1_fouls: 0,
+    team2_fouls: 0,
   });
   const [scoreAnimation, setScoreAnimation] = useState(false);
   const [scoreColor, setScoreColor] = useState<string>("");
@@ -240,11 +246,13 @@ export default function Scoreboard() {
               name={data.team1_name}
               color={data.team1_color}
               score={data.team1_score}
+              fouls={data.team1_fouls}
             />
             <TeamCard
               name={data.team2_name}
               color={data.team2_color}
               score={data.team2_score}
+              fouls={data.team2_fouls}
             />
           </Flex>
         </Flex>

@@ -10,7 +10,27 @@ export async function GET(request: any) {
       const intervalId = setInterval(async () => {
         try {
           // Fetch scoreboard data
-          const scoreboard = await prisma.scoreboard.findFirst();
+          const scoreboard = await prisma.scoreboard.findUnique({
+            where: {
+              id: 1,
+            },
+            select: {
+              id: true,
+              team1_name: true,
+              team1_score: true,
+              team2_name: true,
+              team2_score: true,
+              timer: true,
+              period: true,
+              resetcount: true,
+              team1_color: true,
+              team2_color: true,
+              team1_fouls: true,
+              team2_fouls: true,
+            },
+          });
+
+          // console.log({ scoreboard });
 
           // Handle the case where no data is found
           if (!scoreboard) {
