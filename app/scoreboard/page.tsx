@@ -5,12 +5,37 @@ import useTimeClock from "../../hooks/useTimeClock";
 import { useWakeLock } from "../../hooks/useWakeLock";
 import "./style.css";
 import { Saira_Stencil_One } from "next/font/google";
+import axios from "axios";
+import {
+  QueryClient,
+  QueryClientProvider,
+  useQuery,
+} from "@tanstack/react-query";
 const saira_Stencil_One = Saira_Stencil_One({
   subsets: ["latin"],
   display: "swap",
   variable: "--font-poppins",
   weight: "400",
 });
+const queryClient = new QueryClient();
+
+const retrieveBoard = async () => {
+  const response = await axios.get("http://localhost:3030/scoreboard");
+  return response.data;
+};
+// interface BoardType {
+//   team1_score: number;
+//   team2_score: number;
+//   team1_color: string;
+//   team2_color: string;
+//   team1_name: string;
+//   team2_name: string;
+//   timer: boolean;
+//   period: number;
+//   resetcount: number;
+//   team1_fouls: number;
+//   team2_fouls: number;
+// }
 
 const TeamCard = ({
   name,
@@ -75,25 +100,28 @@ const TeamCard = ({
   );
 };
 
-// import backgroundImage from "../assets/images/soccer.jpg";
-export default function Scoreboard() {
-  const [data, setData] = useState({
-    team1_score: 0,
-    team2_score: 0,
-    team1_color: "#FF0000",
-    team2_color: "#0000FF",
-    team1_name: "test",
-    team2_name: "test",
-    timer: false,
-    period: 1,
-    resetcount: 0,
-    team1_fouls: 0,
-    team2_fouls: 0,
-  });
+function ScoreboardContent() {
+  // const [dataHolder, setDataHolder] = useState<BoardType>({
+  //   team1_score: 0,
+  //   team2_score: 0,
+  //   team1_color: "#FF0000",
+  //   team2_color: "#0000FF",
+  //   team1_name: "test",
+  //   team2_name: "test",
+  //   timer: false,
+  //   period: 1,
+  //   resetcount: 0,
+  //   team1_fouls: 0,
+  //   team2_fouls: 0,
+  // });
   const [scoreAnimation, setScoreAnimation] = useState(false);
   const [scoreColor, setScoreColor] = useState<string>("");
   const { time, start, pause, isRunning, reset } = useTimeClock();
   useWakeLock();
+  const [lastResetCount, setLastResetCount] = useState<number | null>(null); // Track the last reset count
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [resultData, setResultData] = useState<any>({});
 
   const scoreEventHandler = function (color: string) {
     setScoreAnimation(true);
@@ -103,42 +131,77 @@ export default function Scoreboard() {
     }, 1000);
   };
 
+  // useEffect(() => {
+  //   const eventSource = new EventSource("/api/sse");
+
+  //   eventSource.onmessage = (event) => {
+  //     const updatedData = JSON.parse(event.data);
+  //     setData(updatedData);
+  //   };
+
+  //   return () => {
+  //     eventSource.close();
+  //   };
+  // }, []);
+  const {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    data: scoreboardData,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ["scoreboardResponse"], // Query key
+    queryFn: retrieveBoard, // Fetch function
+    refetchInterval: 1500,
+  });
   useEffect(() => {
-    const eventSource = new EventSource("/api/sse");
-
-    eventSource.onmessage = (event) => {
-      const updatedData = JSON.parse(event.data);
-      setData(updatedData);
-    };
-
-    return () => {
-      eventSource.close();
-    };
-  }, []);
+    setResultData(scoreboardData);
+  }, [scoreboardData]);
 
   useEffect(() => {
-    console.log("reset detected");
-    reset();
-  }, [data.resetcount]);
+    if (resultData?.timer) {
+      console.log("Timer started");
+      start(); // Start the clock if `timer` is true
+    } else {
+      console.log("Timer paused");
+      pause(); // Pause the clock if `timer` is false
+    }
+  }, [resultData?.timer, start, pause]);
+
+  // Monitor `resultData?.resetcount` and trigger reset
+  useEffect(() => {
+    if (
+      resultData?.resetcount !== undefined &&
+      resultData?.resetcount !== lastResetCount
+    ) {
+      console.log("Reset detected");
+      reset();
+      setLastResetCount(resultData?.resetcount); // Update the last reset count
+    }
+  }, [resultData?.resetcount, lastResetCount, reset]);
 
   useEffect(() => {
     console.log("TEAM 1 SCORE CHANGED");
-    scoreEventHandler(data.team1_color);
-  }, [data.team1_color, data.team1_score]);
+    scoreEventHandler(resultData?.team1_color);
+  }, [resultData?.team1_color, resultData?.team1_score]);
 
   useEffect(() => {
     console.log("TEAM 2 SCORE CHANGED");
-    scoreEventHandler(data.team2_color);
-  }, [data.team2_color, data.team2_score]);
+    scoreEventHandler(resultData?.team2_color);
+  }, [resultData?.team2_color, resultData?.team2_score]);
 
-  useEffect(() => {
-    if (data.timer) {
-      start();
-    } else {
-      pause();
-    }
-    return () => {};
-  }, [data.timer, pause, start]);
+  // useEffect(() => {
+  //   if (resultData?.timer) {
+  //     start();
+  //   } else {
+  //     pause();
+  //   }
+  //   return () => {};
+  // }, [resultData?.timer, pause, start]);
+
+  if (isLoading) return <div>Fetching Data...</div>;
+  if (error) return <div>An error occurred: {error.message}</div>;
+
+  console.log(resultData);
 
   return (
     <Box
@@ -147,8 +210,11 @@ export default function Scoreboard() {
       w={"100vw"}
       h={"100vh"}
       className={`${saira_Stencil_One.className}`}
-      boxShadow={`${isRunning ? "inset 0 0 0 20px rgba(0,255,0,0.5)" : " inset 0 0 0 10px rgba(250,156,28,0.8)"}`}
+      boxShadow={`${isRunning ? "inset 0 0 0 20px rgba(236, 250, 236, 0.5)" : " inset 0 0 0 10px rgba(250,156,28,0.8)"}`}
     >
+      <Box color="white">
+        {JSON.stringify(scoreboardData)}-- {isRunning ? "ye" : "ne"}
+      </Box>
       <Box
         position="absolute"
         className={`backgroundImage`}
@@ -201,10 +267,10 @@ export default function Scoreboard() {
                     // display="inline-block"
                     width={10}
                     height={10}
-                    background={index < data.period ? "yellow" : "white"}
+                    background={index < resultData?.period ? "yellow" : "white"}
                     transition={"0.5s ease all"}
                     boxShadow={
-                      index < data.period
+                      index < resultData?.period
                         ? "0 0 10px yellow"
                         : "0 0 10px transparent"
                     }
@@ -213,7 +279,7 @@ export default function Scoreboard() {
                   />
                 );
               })}{" "}
-              {/* {Array.from({ length: data.period }).map((item, index) => {
+              {/* {Array.from({ length: resultData?.period }).map((item, index) => {
                 return (
                   <Box
                     key={index * 0.244}
@@ -227,7 +293,7 @@ export default function Scoreboard() {
                   />
                 );
               })}
-              {Array.from({ length: 4 - data.period }).map((item, index) => {
+              {Array.from({ length: 4 - resultData?.period }).map((item, index) => {
                 return (
                   <Box
                     key={index * 0.244}
@@ -244,16 +310,16 @@ export default function Scoreboard() {
           </Flex>{" "}
           <Flex fontSize={"4vw"} flex="1">
             <TeamCard
-              name={data.team1_name}
-              color={data.team1_color}
-              score={data.team1_score}
-              fouls={data.team1_fouls}
+              name={resultData?.team1_name}
+              color={resultData?.team1_color}
+              score={resultData?.team1_score}
+              fouls={resultData?.team1_fouls}
             />
             <TeamCard
-              name={data.team2_name}
-              color={data.team2_color}
-              score={data.team2_score}
-              fouls={data.team2_fouls}
+              name={resultData?.team2_name}
+              color={resultData?.team2_color}
+              score={resultData?.team2_score}
+              fouls={resultData?.team2_fouls}
             />
           </Flex>
         </Flex>
@@ -281,5 +347,13 @@ export default function Scoreboard() {
         SCORE!
       </Box>
     </Box>
+  );
+}
+
+export default function Scoreboard() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <ScoreboardContent />
+    </QueryClientProvider>
   );
 }

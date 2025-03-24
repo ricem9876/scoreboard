@@ -11,6 +11,13 @@ import {
 } from "@chakra-ui/react";
 import { useState, useEffect, useCallback, useRef } from "react";
 import Controller from "./components/Controller";
+import {
+  useQuery,
+  QueryClientProvider,
+  QueryClient,
+} from "@tanstack/react-query";
+import axios from "axios";
+const queryClient = new QueryClient();
 
 type DataTypes = {
   team1_score?: number;
@@ -25,8 +32,11 @@ type DataTypes = {
   team1_fouls?: number;
   team2_fouls?: number;
 };
-
-export default function Edit() {
+const retrieveBoard = async () => {
+  const response = await axios.get("http://localhost:3030/scoreboard");
+  return response.data;
+};
+function EditorContent() {
   const [data, setData] = useState<DataTypes>({
     team1_score: 0,
     team2_score: 0,
@@ -45,6 +55,17 @@ export default function Edit() {
   );
   const [timerActive, setTimerActive] = useState(false);
   const isFirstRender = useRef(true); // Track the first render
+
+  const {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    data: scoreboardData,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ["scoreboardEditorResponse"], // Query key
+    queryFn: retrieveBoard, // Fetch function
+    refetchInterval: 1500,
+  });
 
   useEffect(() => {
     fetch("/api/scoreboard", { method: "GET" })
@@ -85,7 +106,7 @@ export default function Edit() {
   //   // setTimerActive(!timerStatus);
   //   console.log("attempting to trigger timer");
 
-  //   const newTimerStatus = data.timer === 1 ? false : true;
+  //   const newTimerStatus = data?.timer === 1 ? false : true;
 
   //   //change timeractive
   //   setTimerActive(newTimerStatus);
@@ -191,7 +212,7 @@ export default function Edit() {
     await fetch("/api/timerreset", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ previouscount: data.resetcount }),
+      body: JSON.stringify({ previouscount: data?.resetcount }),
     });
   };
 
@@ -228,6 +249,14 @@ export default function Edit() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
 
+  useEffect(() => {
+    setData(scoreboardData);
+    handleUpdate(scoreboardData);
+  }, [scoreboardData]);
+
+  if (isLoading) return <div>Fetching Data...</div>;
+  if (error) return <div>An error occurred: {error.message}</div>;
+
   return (
     <Box p={2}>
       <Box>
@@ -262,7 +291,7 @@ export default function Edit() {
                   <Text>Team 1 Name:</Text>
                   <Input
                     type="text"
-                    value={data.team1_name ? data.team1_name : ""}
+                    value={data?.team1_name ? data?.team1_name : ""}
                     onChange={(e) =>
                       setData({ ...data, team1_name: e.target.value })
                     }
@@ -273,7 +302,7 @@ export default function Edit() {
                   <Text>Team 1 Score:</Text>
                   <Input
                     type="number"
-                    value={data.team1_score}
+                    value={data?.team1_score}
                     onChange={(e) =>
                       setData({ ...data, team1_score: +e.target.value })
                     }
@@ -284,7 +313,7 @@ export default function Edit() {
                   <Text>Team 1 Color:</Text>
                   <Input
                     type="color"
-                    value={data.team1_color}
+                    value={data?.team1_color}
                     onChange={(e) =>
                       setData({ ...data, team1_color: e.target.value })
                     }
@@ -304,7 +333,7 @@ export default function Edit() {
                   <Text>Team 2 Name:</Text>
                   <Input
                     type="text"
-                    value={data.team2_name}
+                    value={data?.team2_name}
                     onChange={(e) =>
                       setData({ ...data, team2_name: e.target.value })
                     }
@@ -315,7 +344,7 @@ export default function Edit() {
                   <Text>Team 2 Score:</Text>
                   <Input
                     type="number"
-                    value={data.team2_score}
+                    value={data?.team2_score}
                     onChange={(e) =>
                       setData({ ...data, team2_score: +e.target.value })
                     }
@@ -326,7 +355,7 @@ export default function Edit() {
                   <Text>Team 2 Color:</Text>
                   <Input
                     type="color"
-                    value={data.team2_color}
+                    value={data?.team2_color}
                     onChange={(e) =>
                       setData({ ...data, team2_color: e.target.value })
                     }
@@ -369,7 +398,7 @@ export default function Edit() {
             <Text mb={2}>Period:</Text>
             <Input
               type="number"
-              value={data.period ?? 0}
+              value={data?.period ?? 0}
               max={4}
               onChange={(e) => setData({ ...data, period: +e.target.value })}
               size="sm"
@@ -402,5 +431,13 @@ export default function Edit() {
         />
       )}
     </Box>
+  );
+}
+
+export default function Editor() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <EditorContent />
+    </QueryClientProvider>
   );
 }
