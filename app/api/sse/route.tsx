@@ -12,7 +12,7 @@ export async function GET(request: any) {
         try {
           // Fetch scoreboard data
           const scoreboard = await prisma.scoreboard.findUnique({
-            where: { id: process.env.NODE_ENV === "development" ? 2 : 1 },
+            where: { id: process.env.DEV_SETTING === "development" ? 2 : 1 },
             select: {
               id: true,
               team1_name: true,

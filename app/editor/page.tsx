@@ -9,7 +9,7 @@ import {
   Text,
   useBreakpointValue,
 } from "@chakra-ui/react";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import Controller from "./components/Controller";
 
 type DataTypes = {
@@ -44,13 +44,19 @@ export default function Edit() {
     "editor"
   );
   const [timerActive, setTimerActive] = useState(false);
+  const isFirstRender = useRef(true); // Track the first render
 
   useEffect(() => {
     fetch("/api/scoreboard", { method: "GET" })
       .then((res) => res.json())
-      .then((data) => {
-        console.log({ data });
-        setData(data.data);
+      .then((responseData) => {
+        console.log("setting data", { responseData });
+        if (responseData.status === 500) {
+          console.log("data is 500");
+        }
+        if (responseData.status !== 500) {
+          setData(responseData.data);
+        }
       });
   }, []);
 
@@ -213,8 +219,14 @@ export default function Edit() {
   });
 
   useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false; // Skip the first render
+      return;
+    }
+
     handleUpdate(data);
-  }, [data, handleUpdate]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data]);
 
   return (
     <Box p={2}>
@@ -250,7 +262,7 @@ export default function Edit() {
                   <Text>Team 1 Name:</Text>
                   <Input
                     type="text"
-                    value={data.team1_name}
+                    value={data.team1_name ? data.team1_name : ""}
                     onChange={(e) =>
                       setData({ ...data, team1_name: e.target.value })
                     }
