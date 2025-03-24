@@ -33,14 +33,15 @@ export async function GET(request: any) {
 
           // Handle the case where no data is found
           if (!scoreboard) {
-            controller.enqueue(
-              `data: ${JSON.stringify({ message: "Scoreboard not found" })}\n\n`
-            );
+            // controller.enqueue(
+            //   `data: ${JSON.stringify({ message: "Scoreboard not found" })}\n\n`
+            // );
           } else {
             controller.enqueue(`data: ${JSON.stringify(scoreboard)}\n\n`);
           }
         } catch (error) {
           // console.error("Error fetching scoreboard data:", error);
+          console.log(error);
           // controller.enqueue(
           //   `data: ${JSON.stringify({ message: "Internal Server Error" })}\n\n`
           // );
