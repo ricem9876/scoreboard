@@ -37,7 +37,7 @@ type DataTypes = {
 };
 const retrieveBoard = async () => {
   const response = await axios.get(
-    process.env.BACKEND_URL + "/scoreboard" || ""
+    process.env.BACKEND_URL + "/.netlify/functions/scoreboard" || ""
   );
   return response.data;
 };

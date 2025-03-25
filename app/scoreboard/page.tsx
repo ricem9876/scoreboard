@@ -21,7 +21,7 @@ const queryClient = new QueryClient();
 
 const retrieveBoard = async () => {
   const response = await axios.get(
-    process.env.BACKEND_URL + "/scoreboard" || ""
+    process.env.BACKEND_URL + "/.netlify/functions/scoreboard" || ""
   );
   return response.data;
 };
@@ -215,9 +215,6 @@ function ScoreboardContent() {
       // transition={}
       boxShadow={`${isRunning ? "inset 0 0 0 20px rgba(6, 251, 6, 0.5)" : " inset 0 0 0 10px rgba(250,156,28,0.8)"}`}
     >
-      <Box color="white">
-        {JSON.stringify(scoreboardData)}-- {isRunning ? "ye" : "ne"}
-      </Box>
       <Box
         position="absolute"
         className={`backgroundImage`}

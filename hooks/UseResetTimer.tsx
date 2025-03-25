@@ -5,11 +5,14 @@ const useResetTimer = (resetCount?: number) => {
 
   return useMutation({
     mutationFn: async () => {
-      const response = await fetch(process.env.BACKEND_URL + "/timerreset", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ previouscount: resetCount }),
-      });
+      const response = await fetch(
+        process.env.BACKEND_URL + "/.netlify/functions/timerReset" || "",
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ previouscount: resetCount }),
+        }
+      );
 
       if (!response.ok) {
         throw new Error("Failed to reset timer");
