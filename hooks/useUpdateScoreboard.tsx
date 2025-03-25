@@ -5,7 +5,8 @@ const useUpdateScoreboard = () => {
 
   return useMutation({
     mutationFn: async (updateData: object) => {
-      const response = await fetch("/api/scoreboard", {
+      console.log("updating with: ", updateData);
+      const response = await fetch(process.env.BACKEND_URL + "/scoreboard", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updateData),
