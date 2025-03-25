@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Box, Flex, Button, Stack } from "@chakra-ui/react";
+import { UseMutateFunction } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 
 export default function Controller({
@@ -13,7 +14,7 @@ export default function Controller({
   decrementFoul,
 }: {
   data: any;
-  handleReset: () => Promise<void>;
+  handleReset: UseMutateFunction<any, Error, void, unknown>;
   incrementScore: (team: string) => void;
   decrementScore: (team: string) => void;
   setPeriodHandler: (period: number) => void;

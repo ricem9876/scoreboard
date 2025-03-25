@@ -9,7 +9,7 @@ import {
   Text,
   useBreakpointValue,
 } from "@chakra-ui/react";
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import Controller from "./components/Controller";
 import {
   useQuery,
@@ -17,6 +17,9 @@ import {
   QueryClient,
 } from "@tanstack/react-query";
 import axios from "axios";
+import useUpdateScoreboard from "../../hooks/useUpdateScoreboard";
+import useResetTimer from "@/hooks/UseResetTimer";
+
 const queryClient = new QueryClient();
 
 type DataTypes = {
@@ -33,7 +36,9 @@ type DataTypes = {
   team2_fouls?: number;
 };
 const retrieveBoard = async () => {
-  const response = await axios.get("http://localhost:3030/scoreboard");
+  const response = await axios.get(
+    process.env.BACKEND_URL + "/scoreboard" || ""
+  );
   return response.data;
 };
 function EditorContent() {
@@ -55,6 +60,13 @@ function EditorContent() {
   );
   const [timerActive, setTimerActive] = useState(false);
   const isFirstRender = useRef(true); // Track the first render
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { mutate: handleUpdate, isError: isErrorUpdate } =
+    useUpdateScoreboard();
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { mutate: handleReset, isError: isErrorReset } = useResetTimer(
+    data?.resetcount
+  );
 
   const {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -67,19 +79,19 @@ function EditorContent() {
     refetchInterval: 1500,
   });
 
-  useEffect(() => {
-    fetch("/api/scoreboard", { method: "GET" })
-      .then((res) => res.json())
-      .then((responseData) => {
-        console.log("setting data", { responseData });
-        if (responseData.status === 500) {
-          console.log("data is 500");
-        }
-        if (responseData.status !== 500) {
-          setData(responseData.data);
-        }
-      });
-  }, []);
+  // useEffect(() => {
+  //   fetch("/api/scoreboard", { method: "GET" })
+  //     .then((res) => res.json())
+  //     .then((responseData) => {
+  //       console.log("setting data", { responseData });
+  //       if (responseData.status === 500) {
+  //         console.log("data is 500");
+  //       }
+  //       if (responseData.status !== 500) {
+  //         setData(responseData.data);
+  //       }
+  //     });
+  // }, []);
 
   // useEffect(() => {
   //   const eventSource = new EventSource("/api/sse");
@@ -143,13 +155,13 @@ function EditorContent() {
     }
   };
 
-  const handleUpdate = useCallback(async (updateData: object) => {
-    await fetch("/api/scoreboard", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(updateData),
-    });
-  }, []);
+  // const handleUpdate = useCallback(async (updateData: object) => {
+  //   await fetch("/api/scoreboard", {
+  //     method: "PUT",
+  //     headers: { "Content-Type": "application/json" },
+  //     body: JSON.stringify(updateData),
+  //   });
+  // }, []);
 
   const incrementScore = (team: string) => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -208,13 +220,13 @@ function EditorContent() {
     });
   };
 
-  const handleReset = async () => {
-    await fetch("/api/timerreset", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ previouscount: data?.resetcount }),
-    });
-  };
+  // const handleReset = async () => {
+  //   await fetch("/api/timerreset", {
+  //     method: "PUT",
+  //     headers: { "Content-Type": "application/json" },
+  //     body: JSON.stringify({ previouscount: data?.resetcount }),
+  //   });
+  // };
 
   const setPeriodHandler = (period: number) => {
     setData({ ...data, period });
