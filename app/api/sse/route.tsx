@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { PrismaClient } from "@prisma/client";
 import { NextResponse } from "next/server";
 
@@ -10,21 +11,40 @@ export async function GET(request: any) {
       const intervalId = setInterval(async () => {
         try {
           // Fetch scoreboard data
-          const scoreboard = await prisma.scoreboard.findFirst();
+          const scoreboard = await prisma.scoreboard.findUnique({
+            where: { id: process.env.DEV_SETTING === "development" ? 2 : 1 },
+            select: {
+              id: true,
+              team1_name: true,
+              team1_score: true,
+              team2_name: true,
+              team2_score: true,
+              timer: true,
+              period: true,
+              resetcount: true,
+              team1_color: true,
+              team2_color: true,
+              team1_fouls: true,
+              team2_fouls: true,
+            },
+          });
+
+          // console.log({ scoreboard });
 
           // Handle the case where no data is found
           if (!scoreboard) {
-            controller.enqueue(
-              `data: ${JSON.stringify({ message: "Scoreboard not found" })}\n\n`
-            );
+            // controller.enqueue(
+            //   `data: ${JSON.stringify({ message: "Scoreboard not found" })}\n\n`
+            // );
           } else {
             controller.enqueue(`data: ${JSON.stringify(scoreboard)}\n\n`);
           }
         } catch (error) {
-          console.error("Error fetching scoreboard data:", error);
-          controller.enqueue(
-            `data: ${JSON.stringify({ message: "Internal Server Error" })}\n\n`
-          );
+          // console.error("Error fetching scoreboard data:", error);
+          console.log(error);
+          // controller.enqueue(
+          //   `data: ${JSON.stringify({ message: "Internal Server Error" })}\n\n`
+          // );
         }
       }, 1000);
 

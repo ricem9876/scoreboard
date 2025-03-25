@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Box, Flex, Button, Stack } from "@chakra-ui/react";
+import { UseMutateFunction } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 
 export default function Controller({
@@ -9,13 +10,17 @@ export default function Controller({
   decrementScore,
   setPeriodHandler,
   toggleTimerHandler,
+  incrementFoul,
+  decrementFoul,
 }: {
   data: any;
-  handleReset: () => Promise<void>;
+  handleReset: UseMutateFunction<any, Error, void, unknown>;
   incrementScore: (team: string) => void;
   decrementScore: (team: string) => void;
   setPeriodHandler: (period: number) => void;
   toggleTimerHandler: (status: boolean) => void;
+  incrementFoul: (team: string) => void;
+  decrementFoul: (team: string) => void;
 }) {
   const [localTimer, setLocalTimer] = useState(data.timer);
 
@@ -62,6 +67,15 @@ export default function Controller({
     setPeriodHandler(period);
   };
 
+  const foulUpHandler = (team: string) => {
+    console.log("foulUpHandler fired", team);
+    incrementFoul(team);
+  };
+  const foulDownHandler = (team: string) => {
+    console.log("foulDownHandler fired", team);
+    decrementFoul(team);
+  };
+
   useEffect(() => {
     setLocalTimer(data.timer);
     return () => {};
@@ -98,6 +112,7 @@ export default function Controller({
             </Button>
           </Box>
         </Flex>
+        SCORES
         <Flex fontSize={"30vw"} gap={2}>
           <Box
             flex={1}
@@ -156,6 +171,85 @@ export default function Controller({
             <Box
               onClick={() => {
                 scoreDownHandler("team2");
+              }}
+              css={{
+                position: "absolute",
+                bottom: 0,
+                left: 0,
+                width: "100%",
+                height: "50%",
+                background: "rgba(0,0,255,0.2)",
+              }}
+            ></Box>
+          </Box>
+        </Flex>
+        FOULS
+        <Flex fontSize={"34px"} gap={2}>
+          <Box
+            flex={1}
+            textAlign={"center"}
+            position={"relative"}
+            css={{
+              border: "1px solid black",
+              borderRadius: 8,
+              paddingY: "40px",
+            }}
+          >
+            {data.team1_fouls}
+            <Box
+              onClick={() => {
+                foulUpHandler("team1");
+              }}
+              css={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                width: "100%",
+                height: "50%",
+                background: "rgba(0,0,255,0.1)",
+              }}
+            ></Box>
+            <Box
+              onClick={() => {
+                foulDownHandler("team1");
+              }}
+              css={{
+                position: "absolute",
+                bottom: 0,
+                left: 0,
+                width: "100%",
+                height: "50%",
+                background: "rgba(0,0,255,0.2)",
+              }}
+            ></Box>
+          </Box>
+          <Box
+            flex={1}
+            textAlign={"center"}
+            position={"relative"}
+            css={{
+              border: "1px solid black",
+              borderRadius: 8,
+              paddingY: "40px",
+            }}
+          >
+            {data.team2_fouls}
+            <Box
+              onClick={() => {
+                foulUpHandler("team2");
+              }}
+              css={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                width: "100%",
+                height: "50%",
+                background: "rgba(0,0,255,0.1)",
+              }}
+            ></Box>
+            <Box
+              onClick={() => {
+                foulDownHandler("team2");
               }}
               css={{
                 position: "absolute",

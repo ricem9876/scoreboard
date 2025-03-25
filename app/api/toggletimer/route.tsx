@@ -12,7 +12,7 @@ export async function PUT(request: any) {
 
     // Update the timer in the database using Prisma
     const result = await prisma.scoreboard.update({
-      where: { id: 1 },
+      where: { id: process.env.DEV_SETTING === "development" ? 2 : 1 },
       data: { timer: timerActive ? 1 : 0 },
     });
 

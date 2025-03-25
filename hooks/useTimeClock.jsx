@@ -8,7 +8,7 @@ function useTimeClock() {
 
   // Start the clock
   const start = () => {
-    if (!isRunning) {
+    if (!isRunning && !intervalRef.current) {
       setIsRunning(true);
       startTimeRef.current = new Date() - elapsedTime * 1000; // Adjust for already elapsed time
       intervalRef.current = setInterval(() => {

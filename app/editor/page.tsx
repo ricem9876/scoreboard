@@ -9,8 +9,18 @@ import {
   Text,
   useBreakpointValue,
 } from "@chakra-ui/react";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useRef } from "react";
 import Controller from "./components/Controller";
+import {
+  useQuery,
+  QueryClientProvider,
+  QueryClient,
+} from "@tanstack/react-query";
+import axios from "axios";
+import useUpdateScoreboard from "../../hooks/useUpdateScoreboard";
+import useResetTimer from "@/hooks/UseResetTimer";
+
+const queryClient = new QueryClient();
 
 type DataTypes = {
   team1_score?: number;
@@ -22,9 +32,16 @@ type DataTypes = {
   timer?: number;
   period?: number;
   resetcount?: number;
+  team1_fouls?: number;
+  team2_fouls?: number;
 };
-
-export default function Edit() {
+const retrieveBoard = async () => {
+  const response = await axios.get(
+    process.env.BACKEND_URL + "/.netlify/functions/scoreboard" || ""
+  );
+  return response.data;
+};
+function EditorContent() {
   const [data, setData] = useState<DataTypes>({
     team1_score: 0,
     team2_score: 0,
@@ -35,17 +52,46 @@ export default function Edit() {
     timer: 0,
     period: 0,
     resetcount: 0,
+    team1_fouls: 0,
+    team2_fouls: 0,
   });
   const [activePanel, setActivePanel] = useState<"controller" | "editor">(
     "editor"
   );
   const [timerActive, setTimerActive] = useState(false);
+  const isFirstRender = useRef(true); // Track the first render
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { mutate: handleUpdate, isError: isErrorUpdate } =
+    useUpdateScoreboard();
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { mutate: handleReset, isError: isErrorReset } = useResetTimer(
+    data?.resetcount
+  );
 
-  useEffect(() => {
-    fetch("/api/scoreboard", { method: "GET" })
-      .then((res) => res.json())
-      .then((data) => setData(data));
-  }, []);
+  const {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    data: scoreboardData,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ["scoreboardEditorResponse"], // Query key
+    queryFn: retrieveBoard, // Fetch function
+    refetchInterval: 1500,
+  });
+
+  // useEffect(() => {
+  //   fetch("/api/scoreboard", { method: "GET" })
+  //     .then((res) => res.json())
+  //     .then((responseData) => {
+  //       console.log("setting data", { responseData });
+  //       if (responseData.status === 500) {
+  //         console.log("data is 500");
+  //       }
+  //       if (responseData.status !== 500) {
+  //         setData(responseData.data);
+  //       }
+  //     });
+  // }, []);
 
   // useEffect(() => {
   //   const eventSource = new EventSource("/api/sse");
@@ -72,7 +118,7 @@ export default function Edit() {
   //   // setTimerActive(!timerStatus);
   //   console.log("attempting to trigger timer");
 
-  //   const newTimerStatus = data.timer === 1 ? false : true;
+  //   const newTimerStatus = data?.timer === 1 ? false : true;
 
   //   //change timeractive
   //   setTimerActive(newTimerStatus);
@@ -109,13 +155,13 @@ export default function Edit() {
     }
   };
 
-  const handleUpdate = useCallback(async () => {
-    await fetch("/api/scoreboard", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
-    });
-  }, [data]);
+  // const handleUpdate = useCallback(async (updateData: object) => {
+  //   await fetch("/api/scoreboard", {
+  //     method: "PUT",
+  //     headers: { "Content-Type": "application/json" },
+  //     body: JSON.stringify(updateData),
+  //   });
+  // }, []);
 
   const incrementScore = (team: string) => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -143,14 +189,44 @@ export default function Edit() {
       }
     });
   };
-
-  const handleReset = async () => {
-    await fetch("/api/timerreset", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ previouscount: data.resetcount }),
+  const incrementFoul = (team: string) => {
+    console.log({ fouls: team });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    setData((prev: any): any => {
+      if (team === "team1") {
+        const newScore = prev.team1_fouls + 1;
+        console.log(newScore);
+        return { ...data, team1_fouls: newScore };
+      }
+      if (team === "team2") {
+        const newScore = prev.team2_fouls + 1;
+        return { ...data, team2_fouls: newScore };
+      }
     });
   };
+  const decrementFoul = (team: string) => {
+    console.log({ fouls: team });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    setData((prev: any): any => {
+      if (team === "team1") {
+        const newScore = prev.team1_fouls - 1;
+        console.log(newScore);
+        return { ...data, team1_fouls: newScore };
+      }
+      if (team === "team2") {
+        const newScore = prev.team2_fouls - 1;
+        return { ...data, team2_fouls: newScore };
+      }
+    });
+  };
+
+  // const handleReset = async () => {
+  //   await fetch("/api/timerreset", {
+  //     method: "PUT",
+  //     headers: { "Content-Type": "application/json" },
+  //     body: JSON.stringify({ previouscount: data?.resetcount }),
+  //   });
+  // };
 
   const setPeriodHandler = (period: number) => {
     setData({ ...data, period });
@@ -176,8 +252,22 @@ export default function Edit() {
   });
 
   useEffect(() => {
-    handleUpdate();
-  }, [data, handleUpdate]);
+    if (isFirstRender.current) {
+      isFirstRender.current = false; // Skip the first render
+      return;
+    }
+
+    handleUpdate(data);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data]);
+
+  useEffect(() => {
+    setData(scoreboardData);
+    handleUpdate(scoreboardData);
+  }, [scoreboardData]);
+
+  if (isLoading) return <div>Fetching Data...</div>;
+  if (error) return <div>An error occurred: {error.message}</div>;
 
   return (
     <Box p={2}>
@@ -213,7 +303,7 @@ export default function Edit() {
                   <Text>Team 1 Name:</Text>
                   <Input
                     type="text"
-                    value={data.team1_name}
+                    value={data?.team1_name ? data?.team1_name : ""}
                     onChange={(e) =>
                       setData({ ...data, team1_name: e.target.value })
                     }
@@ -224,7 +314,7 @@ export default function Edit() {
                   <Text>Team 1 Score:</Text>
                   <Input
                     type="number"
-                    value={data.team1_score}
+                    value={data?.team1_score}
                     onChange={(e) =>
                       setData({ ...data, team1_score: +e.target.value })
                     }
@@ -235,7 +325,7 @@ export default function Edit() {
                   <Text>Team 1 Color:</Text>
                   <Input
                     type="color"
-                    value={data.team1_color}
+                    value={data?.team1_color}
                     onChange={(e) =>
                       setData({ ...data, team1_color: e.target.value })
                     }
@@ -255,7 +345,7 @@ export default function Edit() {
                   <Text>Team 2 Name:</Text>
                   <Input
                     type="text"
-                    value={data.team2_name}
+                    value={data?.team2_name}
                     onChange={(e) =>
                       setData({ ...data, team2_name: e.target.value })
                     }
@@ -266,7 +356,7 @@ export default function Edit() {
                   <Text>Team 2 Score:</Text>
                   <Input
                     type="number"
-                    value={data.team2_score}
+                    value={data?.team2_score}
                     onChange={(e) =>
                       setData({ ...data, team2_score: +e.target.value })
                     }
@@ -277,7 +367,7 @@ export default function Edit() {
                   <Text>Team 2 Color:</Text>
                   <Input
                     type="color"
-                    value={data.team2_color}
+                    value={data?.team2_color}
                     onChange={(e) =>
                       setData({ ...data, team2_color: e.target.value })
                     }
@@ -320,7 +410,7 @@ export default function Edit() {
             <Text mb={2}>Period:</Text>
             <Input
               type="number"
-              value={data.period ?? 0}
+              value={data?.period ?? 0}
               max={4}
               onChange={(e) => setData({ ...data, period: +e.target.value })}
               size="sm"
@@ -330,7 +420,9 @@ export default function Edit() {
           <Button
             colorScheme="blue"
             mt={6}
-            onClick={handleUpdate}
+            onClick={() => {
+              handleUpdate(data);
+            }}
             size="md"
             width="full"
           >
@@ -346,8 +438,18 @@ export default function Edit() {
           decrementScore={decrementScore}
           setPeriodHandler={setPeriodHandler}
           toggleTimerHandler={toggleTimerHandler}
+          incrementFoul={incrementFoul}
+          decrementFoul={decrementFoul}
         />
       )}
     </Box>
+  );
+}
+
+export default function Editor() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <EditorContent />
+    </QueryClientProvider>
   );
 }

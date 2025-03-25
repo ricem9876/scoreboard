@@ -5,6 +5,9 @@ const nextConfig: NextConfig = {
   experimental: {
     optimizePackageImports: ["@chakra-ui/react"],
   },
+  env: {
+    BACKEND_URL: process.env.BACKEND_URL,
+  },
   async redirects() {
     return [
       {
