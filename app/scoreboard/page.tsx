@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 import { Box, Flex, Heading } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
@@ -215,6 +216,26 @@ function ScoreboardContent() {
       // transition={}
       boxShadow={`${isRunning ? "inset 0 0 0 20px rgba(6, 251, 6, 0.5)" : " inset 0 0 0 10px rgba(250,156,28,0.8)"}`}
     >
+      <Box
+        w={"200px"}
+        height="200px"
+        // background="red"
+        position="fixed"
+        top="40px"
+        left={"40px"}
+        // backgroundImage={sponsorImage.src}
+        borderRadius={"100px"}
+        overflow="hidden"
+        boxShadow={"0 0 20px #888"}
+        className={"rotating-3d-pause sponsorImage"}
+      >
+        {/* <Image
+          src={sponsorImage.src}
+          alt="Sponsor"
+          w={"200px"}
+          height="200px"
+        /> */}
+      </Box>
       <Box
         position="absolute"
         className={`backgroundImage`}

@@ -264,6 +264,7 @@ function EditorContent() {
   useEffect(() => {
     setData(scoreboardData);
     handleUpdate(scoreboardData);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [scoreboardData]);
 
   if (isLoading) return <div>Fetching Data...</div>;
