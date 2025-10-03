@@ -221,12 +221,12 @@ function ScoreboardContent() {
         height="300px"
         // background="red"
         position="fixed"
-        top="40px"
-        left={"40px"}
+        top="20px"
+        left={"20px"}
         // backgroundImage={sponsorImage.src}
         borderRadius={"100px"}
         overflow="hidden"
-        boxShadow={"0 0 20px #888"}
+        boxShadow={"0 0 20px #000000"}
         className={"rotating-3d-pause sponsorImage"}
       >
         {/* <Image
