@@ -7,7 +7,7 @@
 
 .sponsorImage {
     background-image: url('../../public/assets/images/sponsor.jpg');
-    background-size: cover;
+    background-size: 150%;
     background-position: center;
     background-repeat: no-repeat;
 }
