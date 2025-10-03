@@ -217,8 +217,8 @@ function ScoreboardContent() {
       boxShadow={`${isRunning ? "inset 0 0 0 20px rgba(6, 251, 6, 0.5)" : " inset 0 0 0 10px rgba(250,156,28,0.8)"}`}
     >
       <Box
-        w={"200px"}
-        height="200px"
+        w={"300px"}
+        height="300px"
         // background="red"
         position="fixed"
         top="40px"
