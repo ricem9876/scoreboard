@@ -221,8 +221,8 @@ function ScoreboardContent() {
         height="300px"
         // background="red"
         position="fixed"
-        top="20px"
-        left={"20px"}
+        top="10px"
+        left={"10px"}
         // backgroundImage={sponsorImage.src}
         borderRadius={"100px"}
         overflow="hidden"
