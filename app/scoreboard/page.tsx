@@ -217,14 +217,14 @@ function ScoreboardContent() {
       boxShadow={`${isRunning ? "inset 0 0 0 20px rgba(6, 251, 6, 0.5)" : " inset 0 0 0 10px rgba(250,156,28,0.8)"}`}
     >
       <Box
-        w={"275px"}
-        height="275px"
+        w={"350px"}
+        height="350px"
         // background="red"
         position="fixed"
-        top="20px"
-        left={"20px"}
+        top="30px"
+        left={"30px"}
         // backgroundImage={sponsorImage.src}
-        borderRadius={"75px"}
+        borderRadius={"85px"}
         overflow="hidden"
         boxShadow={"0 0 20px #000000"}
         className={"rotating-3d-pause sponsorImage"}
