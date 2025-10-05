@@ -1,16 +1,16 @@
 .backgroundImage {
-    background-image: url('../../public/assets/images/soccer.jpg');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-}
-
-.sponsorImage {
     background-image: url('../../public/assets/images/sponsor.jpg');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
 }
+
+/*.sponsorImage {
+    background-image: url('../../public/assets/images/sponsor.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}*/
 
 @keyframes rotateYWithPause {
     0% {
