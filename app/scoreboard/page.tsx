@@ -222,11 +222,11 @@ function ScoreboardContent() {
         // background="red"
         position="fixed"
         top="30px"
-        left={"30px"}
+        left={"50px"}
         // backgroundImage={sponsorImage.src}
-        borderRadius={"85px"}
+        borderRadius={"10px"}
         overflow="hidden"
-        boxShadow={"0 0 20px #000000"}
+        boxShadow={"0 0 10px #000000"}
         className={"rotating-3d-pause sponsorImage"}
       >
         {/* <Image
