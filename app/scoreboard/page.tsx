@@ -94,7 +94,7 @@ const TeamCard = ({
       >
         {/* Team name heading */}
         <Heading
-          fontSize={"7vw"} // Responsive font size (7% of viewport width)
+          fontSize={"4vw"} // Responsive font size (7% of viewport width)
           lineHeight={1} // Tight line spacing
           textTransform={"capitalize"} // Capitalize first letter of each word
           color="white" // White text color
@@ -107,7 +107,7 @@ const TeamCard = ({
         <Box>
           {/* Team score display */}
           <Box
-            fontSize={"12vw"} // Large responsive font size (12% of viewport width)
+            fontSize={"6vw"} // Large responsive font size (12% of viewport width)
             color="white" // White text color
             lineHeight={1} // Tight line spacing
           >
