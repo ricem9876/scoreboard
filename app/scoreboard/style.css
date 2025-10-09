@@ -1,6 +1,6 @@
 .backgroundImage {
     background-image: url('../../public/assets/images/sponsor.jpg');
-    background-size: cover;
+    background-size: contain;
     background-position: center;
     background-repeat: no-repeat;
 }
