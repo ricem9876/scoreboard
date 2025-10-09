@@ -325,7 +325,7 @@ function ScoreboardContent() {
           {/* Team cards section - positioned on opposite sides */}
           <Flex fontSize={"4vw"} flex="1" position="relative">
             {/* Team 1 card - positioned on the left */}
-            <Box position="absolute" left="5%" top="50%" transform="translateY(-50%)">
+            <Box position="absolute" left="2%" top="50%" transform="translateY(-50%)">
               <TeamCard
                 name={resultData?.team1_name}
                 color={resultData?.team1_color}
@@ -334,7 +334,7 @@ function ScoreboardContent() {
               />
             </Box>
             {/* Team 2 card - positioned on the right */}
-            <Box position="absolute" right="5%" top="50%" transform="translateY(-50%)">
+            <Box position="absolute" right="2%" top="50%" transform="translateY(-50%)">
               <TeamCard
                 name={resultData?.team2_name}
                 color={resultData?.team2_color}
