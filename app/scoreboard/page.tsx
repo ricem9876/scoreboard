@@ -258,10 +258,10 @@ function ScoreboardContent() {
       <Box
         position="absolute" // Absolute positioning
         className={`backgroundImage`} // CSS class for background image
-        top="50" // Align to Ce ter
+        top="50" // Align to Center
         left="50" // Align to Center
-        width="80%" // Width
-        height="80%" // height
+        width="60%" // Width
+        height="60%" // height
         opacity={"0.7"} // Transparency .1 high, 1.0 none
         zIndex={1} // Behind other content
       ></Box>
