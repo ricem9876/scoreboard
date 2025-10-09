@@ -262,7 +262,7 @@ function ScoreboardContent() {
         left="0" // Align to left
         width="100%" // Full width
         height="100%" // Full height
-        opacity={"0.1"} // Very transparent (10% opacity)
+        opacity={"0.9"} // Very transparent (10% opacity)
         zIndex={0} // Behind other content
       ></Box>
 
