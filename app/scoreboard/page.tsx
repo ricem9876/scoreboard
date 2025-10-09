@@ -286,7 +286,7 @@ function ScoreboardContent() {
                 display={"inline-block"} // Inline block display
                 paddingY={3} // Vertical padding
                 paddingX={8} // Horizontal padding
-                mr={20} // Right margin
+                mr={10} // Right margin
                 borderRadius={20} // Rounded corners
                 pos={"relative"} // Relative positioning
                 transition="0.5s ease all" // Smooth transitions
