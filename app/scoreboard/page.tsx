@@ -260,10 +260,10 @@ function ScoreboardContent() {
         className={`backgroundImage`} // CSS class for background image
         top="0" // Align to top
         left="0" // Align to left
-        width="100%" // Full width
-        height="100%" // Full height
-        opacity={"0.9"} // Very transparent (10% opacity)
-        zIndex={0} // Behind other content
+        width="80%" // Full width
+        height="80%" // Full height
+        opacity={"0.7"} // Very transparent (10% opacity)
+        zIndex={1} // Behind other content
       ></Box>
 
       {/* Main scoreboard content container */}
