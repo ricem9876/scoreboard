@@ -84,9 +84,9 @@ const TeamCard = ({
       {/* Inner card with team information */}
       <Box
         display="inline-block" // Display as inline block element
-        paddingX={20} // Horizontal padding - REDUCE THIS (try 12-15)
-        paddingY={10} // Vertical padding - REDUCE THIS (try 6-8)
-        boxShadow={`inset 0 24px 0 0 ${color}`} // Colored top border effect - REDUCE 24px (try 16-20)
+        paddingX={15} // Horizontal padding - REDUCE THIS (try 12-15)
+        paddingY={6} // Vertical padding - REDUCE THIS (try 6-8)
+        boxShadow={`inset 0 16px 0 0 ${color}`} // Colored top border effect - REDUCE 24px (try 16-20)
         borderRadius={20} // Rounded corners
         color="white" // White text color
         background="rgba(0,0,0,0.5)" // Semi-transparent black background
