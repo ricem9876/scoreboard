@@ -84,9 +84,9 @@ const TeamCard = ({
       {/* Inner card with team information */}
       <Box
         display="inline-block" // Display as inline block element
-        paddingX={12} // Horizontal padding
-        paddingY={6} // Vertical padding
-        boxShadow={`inset 0 24px 0 0 ${color}`} // Colored top border effect using inset shadow
+        paddingX={20} // Horizontal padding - REDUCE THIS (try 12-15)
+        paddingY={10} // Vertical padding - REDUCE THIS (try 6-8)
+        boxShadow={`inset 0 24px 0 0 ${color}`} // Colored top border effect - REDUCE 24px (try 16-20)
         borderRadius={20} // Rounded corners
         color="white" // White text color
         background="rgba(0,0,0,0.5)" // Semi-transparent black background
@@ -94,11 +94,11 @@ const TeamCard = ({
       >
         {/* Team name heading */}
         <Heading
-          fontSize={"4vw"} // Responsive font size (7% of viewport width)
+          fontSize={"7vw"} // Responsive font size - REDUCE THIS (try 5-6vw)
           lineHeight={1} // Tight line spacing
           textTransform={"capitalize"} // Capitalize first letter of each word
           color="white" // White text color
-          mb={10} // Margin bottom
+          mb={10} // Margin bottom - REDUCE THIS (try 6-8)
         >
           {name}
         </Heading>
@@ -107,7 +107,7 @@ const TeamCard = ({
         <Box>
           {/* Team score display */}
           <Box
-            fontSize={"6vw"} // Large responsive font size (12% of viewport width)
+            fontSize={"12vw"} // Large responsive font size - REDUCE THIS (try 8-10vw)
             color="white" // White text color
             lineHeight={1} // Tight line spacing
           >
@@ -258,12 +258,12 @@ function ScoreboardContent() {
       <Box
         position="absolute" // Absolute positioning
         className={`backgroundImage`} // CSS class for background image
-        top="35%" // Align to Center
-        left="25%" // Align to Center
-        width="60%" // Width
-        height="60%" // height
-        opacity={"0.7"} // Transparency .1 high, 1.0 none
-        zIndex={1} // Behind other content
+        top="0" // Align to top
+        left="0" // Align to left
+        width="100%" // Full width
+        height="100%" // Full height
+        opacity={"0.1"} // Very transparent (10% opacity)
+        zIndex={0} // Behind other content
       ></Box>
 
       {/* Main scoreboard content container */}
@@ -286,7 +286,7 @@ function ScoreboardContent() {
                 display={"inline-block"} // Inline block display
                 paddingY={3} // Vertical padding
                 paddingX={8} // Horizontal padding
-                mr={10} // Right margin
+                mr={20} // Right margin
                 borderRadius={20} // Rounded corners
                 pos={"relative"} // Relative positioning
                 transition="0.5s ease all" // Smooth transitions
@@ -322,22 +322,26 @@ function ScoreboardContent() {
             </Box>
           </Flex>
 
-          {/* Team cards section */}
-          <Flex fontSize={"4vw"} flex="1">
-            {/* Team 1 card */}
-            <TeamCard
-              name={resultData?.team1_name}
-              color={resultData?.team1_color}
-              score={resultData?.team1_score}
-              fouls={resultData?.team1_fouls}
-            />
-            {/* Team 2 card */}
-            <TeamCard
-              name={resultData?.team2_name}
-              color={resultData?.team2_color}
-              score={resultData?.team2_score}
-              fouls={resultData?.team2_fouls}
-            />
+          {/* Team cards section - positioned on opposite sides */}
+          <Flex fontSize={"4vw"} flex="1" position="relative">
+            {/* Team 1 card - positioned on the left */}
+            <Box position="absolute" left="5%" top="50%" transform="translateY(-50%)">
+              <TeamCard
+                name={resultData?.team1_name}
+                color={resultData?.team1_color}
+                score={resultData?.team1_score}
+                fouls={resultData?.team1_fouls}
+              />
+            </Box>
+            {/* Team 2 card - positioned on the right */}
+            <Box position="absolute" right="5%" top="50%" transform="translateY(-50%)">
+              <TeamCard
+                name={resultData?.team2_name}
+                color={resultData?.team2_color}
+                score={resultData?.team2_score}
+                fouls={resultData?.team2_fouls}
+              />
+            </Box>
           </Flex>
         </Flex>
       </Flex>
