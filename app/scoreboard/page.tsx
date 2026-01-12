@@ -217,14 +217,12 @@ className={`${saira_Stencil_One.className}`}
 boxShadow={`${isRunning ? "inset 0 0 0 20px rgba(6, 251, 6, 0.5)" : " inset 0 0 0 10px rgba(250,156,28,0.8)"}`}
 >
 <Box
-        w={"350px"}
         w={"600px"}
-height="350px"
-// background="red"
-position="fixed"
-        top="30px"
+        height="350px"
+        // background="red"
+        position="fixed"
         top="20px"
-left={"50px"}
+        left={"50px"}
 // backgroundImage={sponsorImage.src}
 borderRadius={"10px"}
 overflow="hidden"
